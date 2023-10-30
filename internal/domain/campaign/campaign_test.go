@@ -7,15 +7,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var (
+	name     = "Campaign X"
+	content  = "Body"
+	contacts = []string{"email@email.com", "email1@email.com"}
+)
+
 func Test_NewCampaign(t *testing.T) {
 
 	assert := assert.New(t)
 
-	name := "Campaign X"
-	content := "Body"
-	contacts := []string{"email@email.com", "email2@email.com"}
-
-	campaign := NewCampaign(name, content, contacts)
+	campaign, _ := NewCampaign(name, content, contacts)
 
 	assert.Equal(campaign.Name, name)
 	assert.Equal(campaign.Content, content)
@@ -24,23 +26,26 @@ func Test_NewCampaign(t *testing.T) {
 
 func Test_NewCampaign_IDIsNotNill(t *testing.T) {
 	assert := assert.New(t)
-	name := "Campaign X"
-	content := "Body"
-	contacts := []string{"email@email.com", "email2@email.com"}
 
-	campaign := NewCampaign(name, content, contacts)
+	campaign, _ := NewCampaign(name, content, contacts)
 
 	assert.NotNil(campaign.ID)
 }
 
 func Test_NewCampaign_CreatedAtIsNotNIll(t *testing.T) {
 	assert := assert.New(t)
-	name := "Campaign X"
-	content := "Body"
-	contacts := []string{"email@email.com", "email2@email.com"}
+
 	now := time.Now().Add(-time.Minute)
 
-	campaign := NewCampaign(name, content, contacts)
+	campaign, _ := NewCampaign(name, content, contacts)
 
 	assert.Greater(campaign.CreatedAt, now)
+}
+
+func Test_NewCampaign_MustValidateName(t *testing.T) {
+	assert := assert.New(t)
+
+	_, err := NewCampaign("", content, contacts)
+
+	assert.Equal("Name is required", err.Error())
 }
