@@ -49,3 +49,19 @@ func Test_NewCampaign_MustValidateName(t *testing.T) {
 
 	assert.Equal("Name is required", err.Error())
 }
+
+func Test_NewCampaign_MustValidateContent(t *testing.T) {
+	assert := assert.New(t)
+
+	_, err := NewCampaign(name, "", contacts)
+
+	assert.Equal("Content is required", err.Error())
+}
+
+func Test_NewCampaign_MustValidateContacts(t *testing.T) {
+	assert := assert.New(t)
+
+	_, err := NewCampaign(name, content, []string{})
+
+	assert.Equal("Contacts is required", err.Error())
+}

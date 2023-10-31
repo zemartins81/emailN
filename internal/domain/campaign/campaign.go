@@ -25,6 +25,14 @@ func NewCampaign(name, content string, emails []string) (*Campaign, error) {
 		return nil, errors.New("Name is required")
 	}
 
+	if content == "" {
+		return nil, errors.New("Content is required")
+	}
+
+	if len(emails) == 0 {
+		return nil, errors.New("Contacts is required")
+	}
+
 	contacts := make([]Contact, len(emails))
 	for index, email := range emails {
 		contacts[index].Email = email
