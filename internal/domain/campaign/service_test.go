@@ -2,10 +2,20 @@ package campaign
 
 import (
 	"emailN/internal/contract"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+)
+
+var (
+	newCampaign = contract.NewCampaign{
+		Name:    "test",
+		Content: "test",
+		Emails:  []string{"test@test.com"},
+	}
+	service = Service{}
 )
 
 type repositoryMock struct {
@@ -19,13 +29,6 @@ func (r *repositoryMock) Save(campaign *Campaign) error {
 
 func Test_Create_Campign(t *testing.T) {
 	assert := assert.New(t)
-	service := Service{}
-
-	newCampaign := contract.NewCampaign{
-		Name:    "test",
-		Content: "test",
-		Emails:  []string{"test@test.com"},
-	}
 
 	id, err := service.Create(newCampaign)
 
@@ -35,31 +38,44 @@ func Test_Create_Campign(t *testing.T) {
 
 func Test_Create_SaveCampaign(t *testing.T) {
 
-	newCampaign := contract.NewCampaign{
-		Name:    "test",
-		Content: "test",
-		Emails:  []string{"test@test.com"},
-	}
-
 	repositoryMock := new(repositoryMock)
+
 	repositoryMock.On("Save", mock.MatchedBy(func(campaign *Campaign) bool {
-		if campaign.Name != newCampaign.Name {
-			return false
-		}
-		if campaign.Content != newCampaign.Content {
-			return false
-		}
-		if len(campaign.Contacts) != len(newCampaign.Emails) {
+		if campaign.Name != newCampaign.Name ||
+			campaign.Content != newCampaign.Content ||
+			len(campaign.Contacts) != len(newCampaign.Emails) {
 			return false
 		}
 
 		return true
 	})).Return(nil)
 
-	service := Service{Repository: repositoryMock}
+	service.Repository = repositoryMock
 
 	service.Create(newCampaign)
 
 	repositoryMock.AssertExpectations(t)
+}
 
+func Test_Create_ValidateDomainError(t *testing.T) {
+	assert := assert.New(t)
+	newCampaign.Name = ""
+
+	_, err := service.Create(newCampaign)
+
+	assert.NotNil(err)
+	assert.Equal("Name is required", err.Error())
+}
+
+func Test_Create_ValidateRepositorySave(t *testing.T) {
+	assert := assert.New(t)
+
+	repositoryMock := new(repositoryMock)
+	repositoryMock.On("Save", mock.Anything).Return(errors.New("error to save on database"))
+
+	service.Repository = repositoryMock
+
+	_, err := service.Create(newCampaign)
+
+	assert.Equal("error to save on database", err.Error())
 }

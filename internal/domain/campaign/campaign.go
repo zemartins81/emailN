@@ -12,11 +12,11 @@ type Contact struct {
 }
 
 type Campaign struct {
-	ID        string
-	Name      string
-	CreatedAt time.Time
-	Content   string
-	Contacts  []Contact
+	ID        string    `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	Content   string    `json:"content"`
+	Contacts  []Contact `json:"contacts"`
 }
 
 func NewCampaign(name, content string, emails []string) (*Campaign, error) {
