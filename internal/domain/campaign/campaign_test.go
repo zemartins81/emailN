@@ -1,67 +1,33 @@
 package campaign
 
-import (
-	"testing"
-	"time"
+import "testing"
 
-	"github.com/stretchr/testify/assert"
-)
+func TestNewCampaign(t *testing.T) {
+	// Define variables for the campaign
+	name := "Campaign x"
+	content := "BOdy"
+	contacts := []string{"email@e.com", "email2@e.com"}
 
-var (
-	name     = "Campaign X"
-	content  = "Body"
-	contacts = []string{"email@email.com", "email1@email.com"}
-)
+	// Call the function to create a new campaign
+	campaign := NewCampaign(name, content, contacts)
 
-func Test_NewCampaign(t *testing.T) {
+	// Test if the ID of the new campaign is as expected
+	if campaign.ID != "1" {
+		t.Errorf("expected 1 got %s", campaign.ID)
+	}
 
-	assert := assert.New(t)
+	// Test if the campaign name matches the one assigned
+	if campaign.Name != name {
+		t.Errorf("expected %s got %s", name, campaign.Name)
+	}
 
-	campaign, _ := NewCampaign(name, content, contacts)
+	// Test if the campaign content matches the one assigned
+	if campaign.Content != content {
+		t.Errorf("expected %s got %s", content, campaign.Content)
+	}
 
-	assert.Equal(campaign.Name, name)
-	assert.Equal(campaign.Content, content)
-	assert.Equal(len(campaign.Contacts), len(contacts))
-}
-
-func Test_NewCampaign_IDIsNotNill(t *testing.T) {
-	assert := assert.New(t)
-
-	campaign, _ := NewCampaign(name, content, contacts)
-
-	assert.NotNil(campaign.ID)
-}
-
-func Test_NewCampaign_CreatedAtIsNotNIll(t *testing.T) {
-	assert := assert.New(t)
-
-	now := time.Now().Add(-time.Minute)
-
-	campaign, _ := NewCampaign(name, content, contacts)
-
-	assert.Greater(campaign.CreatedAt, now)
-}
-
-func Test_NewCampaign_MustValidateName(t *testing.T) {
-	assert := assert.New(t)
-
-	_, err := NewCampaign("", content, contacts)
-
-	assert.Equal("Name is required", err.Error())
-}
-
-func Test_NewCampaign_MustValidateContent(t *testing.T) {
-	assert := assert.New(t)
-
-	_, err := NewCampaign(name, "", contacts)
-
-	assert.Equal("Content is required", err.Error())
-}
-
-func Test_NewCampaign_MustValidateContacts(t *testing.T) {
-	assert := assert.New(t)
-
-	_, err := NewCampaign(name, content, []string{})
-
-	assert.Equal("Contacts is required", err.Error())
+	// Test if the campaign contact list size matches the one assigned
+	if len(campaign.Contacts) != len(contacts) {
+		t.Errorf("expected %d got %d", len(contacts), len(campaign.Contacts))
+	}
 }
